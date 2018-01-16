@@ -1,4 +1,4 @@
-
+#include <Arduino.h>
 
 
 
@@ -82,26 +82,4 @@ else {
    digitalWrite(motor2, LOW);
     Serial.println("roue libre");
  }
-
-
-
-
-
-if (xPosition < sensiDroite) {
-    digitalWrite(motor3, LOW);
-    digitalWrite(motor4, HIGH);
-
-  }
-
- if (xPosition > sensiGauche) {
-    digitalWrite(motor3, HIGH);
-    digitalWrite(motor4, LOW);
-
-  }
- if (xPosition > sensiGauche and xPosition < sensiDroite){
-    digitalWrite(motor3, LOW);
-    digitalWrite(motor4, LOW);
- }
-
-
 }
