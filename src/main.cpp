@@ -9,7 +9,7 @@ RH_ASK driver;
 // joystick
 const int xPin = A1;
 const int yPin = A0;
-const int buttonPin = 12;
+const int buttonPin = 10;
 
 // direction
 const int NO_ORDER = 0;
@@ -45,29 +45,41 @@ void loop() {
   yPosition = analogRead(yPin);
   buttonState = digitalRead(buttonPin);
 
-  int vitesseAvant = map(yPosition, 0, sensiAvant, 0, 255);
-  int vitesseArriere = map(yPosition, sensiArriere, 0, 0, 255);
+  int vitesseAvant = map(yPosition, sensiAvant, 0, 0, 255);
+  int vitesseArriere = map(sensiAvant, yPosition, 0, 0, 255);
+
+  int braquageDroite = map(xPosition, sensiDroite, 0, 0, 255);
+  int braquageGauche = map(sensiDroite, xPosition, 0, 0, 255);
 
   int propulsion;
   int vitesse;
   int direction;
   int braquage;
 
-  if (vitesseAvant>0) {
+  if (vitesseAvant>32) {
     propulsion=FORWARD;
     vitesse=vitesseAvant;
   }
   else if (vitesseArriere>0) {
     propulsion=BACKWARD;
-    vitesse=vitesseArriere;
+    vitesse=vitesseArriere + 150;
   }
   else {
     propulsion=NO_ORDER;
     vitesse=0;
   }
-
-  direction = TURN_RIGHT;
-
+  if (braquageDroite>42){
+    direction = TURN_RIGHT;
+    braquage = braquageDroite;
+  }
+  else if (braquageGauche>0){
+    direction = TURN_LEFT;
+    braquage = braquageGauche + 150;
+  }
+  else {
+    direction = NO_ORDER;
+    braquage = 0;
+  }
   int instructions[4]; //avant/arriere, vitesse, droite/gauche, braquage
 
   instructions[0]=propulsion;
@@ -77,8 +89,6 @@ void loop() {
 
   driver.send((uint8_t*)instructions, 8); //8 == 4*sizeof(int)
   driver.waitPacketSent(); // needed ?
-  uint16_t merged = (instructions[1] << 8) | instructions[0]; //merge them back together
-  Serial.print("Sent: ");Serial.println(merged);
 
   delay(1000);
 }
